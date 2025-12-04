@@ -288,6 +288,87 @@ public class DataLoader implements CommandLineRunner {
         log.info("✅ Creado profesional: {}", tecnicoPC.getNombreCompleto());
     }
 
+    private void crearProfesionalesMasivos(List<Comuna> comunas) {
+        List<ProfesionalSeed> seeds = List.of(
+            new ProfesionalSeed("valentina.rios@chaskipro.cl", "Valentina Rios", ProfessionCategory.ELECTRICISTA),
+            new ProfesionalSeed("daniel.mella@chaskipro.cl", "Daniel Mella", ProfessionCategory.GASFITER),
+            new ProfesionalSeed("fernanda.palma@chaskipro.cl", "Fernanda Palma", ProfessionCategory.PINTOR),
+            new ProfesionalSeed("sebastian.mora@chaskipro.cl", "Sebastian Mora", ProfessionCategory.CARPINTERO),
+            new ProfesionalSeed("carolina.pavez@chaskipro.cl", "Carolina Pavez", ProfessionCategory.JARDINERO),
+            new ProfesionalSeed("ignacio.tapia@chaskipro.cl", "Ignacio Tapia", ProfessionCategory.CERRAJERO),
+            new ProfesionalSeed("paula.araya@chaskipro.cl", "Paula Araya", ProfessionCategory.TECNICO_REFRIGERACION),
+            new ProfesionalSeed("martin.bravo@chaskipro.cl", "Martin Bravo", ProfessionCategory.TECNICO_COMPUTACION),
+            new ProfesionalSeed("sofia.cuevas@chaskipro.cl", "Sofia Cuevas", ProfessionCategory.ELECTRICISTA),
+            new ProfesionalSeed("jorge.sanhueza@chaskipro.cl", "Jorge Sanhueza", ProfessionCategory.GASFITER),
+            new ProfesionalSeed("macarena.ojeda@chaskipro.cl", "Macarena Ojeda", ProfessionCategory.PINTOR),
+            new ProfesionalSeed("felipe.oro@chaskipro.cl", "Felipe Oro", ProfessionCategory.CARPINTERO),
+            new ProfesionalSeed("catalina.poblete@chaskipro.cl", "Catalina Poblete", ProfessionCategory.JARDINERO),
+            new ProfesionalSeed("rodrigo.munita@chaskipro.cl", "Rodrigo Munita", ProfessionCategory.CERRAJERO),
+            new ProfesionalSeed("andrea.guzman@chaskipro.cl", "Andrea Guzman", ProfessionCategory.TECNICO_REFRIGERACION),
+            new ProfesionalSeed("francisco.lagos@chaskipro.cl", "Francisco Lagos", ProfessionCategory.TECNICO_COMPUTACION),
+            new ProfesionalSeed("patricia.arancibia@chaskipro.cl", "Patricia Arancibia", ProfessionCategory.ELECTRICISTA),
+            new ProfesionalSeed("cristian.saez@chaskipro.cl", "Cristian Saez", ProfessionCategory.GASFITER),
+            new ProfesionalSeed("barbara.cortez@chaskipro.cl", "Barbara Cortez", ProfessionCategory.PINTOR),
+            new ProfesionalSeed("camilo.pizarro@chaskipro.cl", "Camilo Pizarro", ProfessionCategory.CARPINTERO),
+            new ProfesionalSeed("monica.verdugo@chaskipro.cl", "Monica Verdugo", ProfessionCategory.JARDINERO),
+            new ProfesionalSeed("ricardo.vargas@chaskipro.cl", "Ricardo Vargas", ProfessionCategory.CERRAJERO),
+            new ProfesionalSeed("javiera.torrealba@chaskipro.cl", "Javiera Torrealba", ProfessionCategory.TECNICO_REFRIGERACION),
+            new ProfesionalSeed("tomas.vergara@chaskipro.cl", "Tomas Vergara", ProfessionCategory.TECNICO_COMPUTACION),
+            new ProfesionalSeed("lorena.yanez@chaskipro.cl", "Lorena Yanez", ProfessionCategory.ELECTRICISTA),
+            new ProfesionalSeed("benjamin.cortes@chaskipro.cl", "Benjamin Cortes", ProfessionCategory.GASFITER),
+            new ProfesionalSeed("natalia.bustos@chaskipro.cl", "Natalia Bustos", ProfessionCategory.PINTOR),
+            new ProfesionalSeed("vicente.fuentes@chaskipro.cl", "Vicente Fuentes", ProfessionCategory.CARPINTERO),
+            new ProfesionalSeed("maria.poblete@chaskipro.cl", "Maria Poblete", ProfessionCategory.JARDINERO),
+            new ProfesionalSeed("felix.rivera@chaskipro.cl", "Felix Rivera", ProfessionCategory.CERRAJERO),
+            new ProfesionalSeed("claudia.espinoza@chaskipro.cl", "Claudia Espinoza", ProfessionCategory.TECNICO_REFRIGERACION),
+            new ProfesionalSeed("gustavo.vidal@chaskipro.cl", "Gustavo Vidal", ProfessionCategory.TECNICO_COMPUTACION),
+            new ProfesionalSeed("pamela.galvez@chaskipro.cl", "Pamela Galvez", ProfessionCategory.ELECTRICISTA),
+            new ProfesionalSeed("mauricio.valdes@chaskipro.cl", "Mauricio Valdes", ProfessionCategory.GASFITER),
+            new ProfesionalSeed("daniela.acevedo@chaskipro.cl", "Daniela Acevedo", ProfessionCategory.PINTOR),
+            new ProfesionalSeed("hector.quiroz@chaskipro.cl", "Hector Quiroz", ProfessionCategory.CARPINTERO),
+            new ProfesionalSeed("karen.tapia@chaskipro.cl", "Karen Tapia", ProfessionCategory.JARDINERO),
+            new ProfesionalSeed("alonso.salazar@chaskipro.cl", "Alonso Salazar", ProfessionCategory.CERRAJERO),
+            new ProfesionalSeed("veronica.arenas@chaskipro.cl", "Veronica Arenas", ProfessionCategory.TECNICO_REFRIGERACION),
+            new ProfesionalSeed("simon.arancibia@chaskipro.cl", "Simon Arancibia", ProfessionCategory.TECNICO_COMPUTACION),
+            new ProfesionalSeed("gloria.carrasco@chaskipro.cl", "Gloria Carrasco", ProfessionCategory.ELECTRICISTA),
+            new ProfesionalSeed("pablo.soto@chaskipro.cl", "Pablo Soto", ProfessionCategory.GASFITER),
+            new ProfesionalSeed("alejandra.cisternas@chaskipro.cl", "Alejandra Cisternas", ProfessionCategory.PINTOR),
+            new ProfesionalSeed("leonardo.iglesias@chaskipro.cl", "Leonardo Iglesias", ProfessionCategory.CARPINTERO)
+        );
+
+        for (int i = 0; i < seeds.size(); i++) {
+            ProfesionalSeed seed = seeds.get(i);
+            User user = User.builder()
+                    .email(seed.email())
+                    .password(passwordEncoder.encode("password123"))
+                    .nombreCompleto(seed.nombre())
+                    .rut(String.format("30%07d-%d", i + 1, (i % 9) + 1))
+                    .rol(Rol.PROFESIONAL)
+                    .activo(true)
+                    .build();
+
+            user = userRepository.save(user);
+
+            Set<Comuna> coberturas = obtenerCoberturas(comunas, i % comunas.size(), 4);
+            BigDecimal rating = new BigDecimal(String.format("4.%d", (i % 10)));
+
+            ProfessionalProfile profile = ProfessionalProfile.builder()
+                    .user(user)
+                    .biografia("Profesional con experiencia y vocación de servicio en " + seed.categoria().name().toLowerCase())
+                    .telefono(String.format("+5699%08d", i + 10000000))
+                    .categoria(seed.categoria())
+                    .estadoValidacion(EstadoValidacion.APROBADO)
+                    .promedioCalificacion(rating)
+                    .totalCalificaciones(60 + i)
+                    .serviciosCompletados(80 + (i * 2))
+                    .coberturas(coberturas)
+                    .build();
+
+            professionalProfileRepository.save(profile);
+            log.info("✅ Creado profesional extra: {}", user.getNombreCompleto());
+        }
+    }
+
     private void crearCliente() {
         User cliente = User.builder()
             .email("cliente@chaskipro.cl")
@@ -301,4 +382,14 @@ public class DataLoader implements CommandLineRunner {
         userRepository.save(cliente);
         log.info("✅ Creado cliente de prueba: {}", cliente.getNombreCompleto());
     }
+
+    private Set<Comuna> obtenerCoberturas(List<Comuna> comunas, int inicio, int cantidad) {
+        Set<Comuna> cobertura = new HashSet<>();
+        for (int i = 0; i < cantidad; i++) {
+            cobertura.add(comunas.get((inicio + i) % comunas.size()));
+        }
+        return cobertura;
+    }
+
+    private record ProfesionalSeed(String email, String nombre, ProfessionCategory categoria) { }
 }
