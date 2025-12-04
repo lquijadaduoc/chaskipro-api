@@ -49,18 +49,25 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
-                        // Endpoints públicos
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
+                        // Endpoints públicos de autenticación
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // Endpoints públicos de comunas
                         .requestMatchers("/api/comunas/**").permitAll()
+                        // Endpoints públicos de profesionales (búsqueda y visualización)
                         .requestMatchers("/api/profesionales/comuna/**").permitAll()
-                        .requestMatchers("/api/profesionales/perfil/*").permitAll()
+                        .requestMatchers("/api/profesionales/perfil/{id}").permitAll()
+                        .requestMatchers("/api/profesionales/usuario/{id}").permitAll()
                         // Endpoints de administrador
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Endpoints de profesionales
-                        .requestMatchers("/api/profesional/**").hasRole("PROFESIONAL")
+                        .requestMatchers("/api/profesionales/estado/**").hasRole("ADMIN")
+                        .requestMatchers("/api/profesionales/perfil/*/aprobar").hasRole("ADMIN")
+                        .requestMatchers("/api/profesionales/perfil/*/rechazar").hasRole("ADMIN")
+                        .requestMatchers("/api/profesionales/perfil/*/estado").hasRole("ADMIN")
+                        // Endpoints de profesionales (requieren autenticación)
+                        .requestMatchers("/api/profesional/**").hasAnyRole("PROFESIONAL", "ADMIN")
+                        .requestMatchers("/api/profesionales/perfil/**").hasAnyRole("PROFESIONAL", "ADMIN")
                         // Endpoints de clientes
-                        .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
+                        .requestMatchers("/api/cliente/**").hasAnyRole("CLIENTE", "ADMIN")
                         // Cualquier otro endpoint requiere autenticación
                         .anyRequest().authenticated()
                 )
@@ -94,7 +101,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:4200", "http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         configuration.setExposedHeaders(List.of("Authorization"));
