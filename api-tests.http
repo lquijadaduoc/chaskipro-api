@@ -1,0 +1,238 @@
+# Archivo de pruebas HTTP para Chaskipro API
+# Puede ser usado con extensiones como REST Client en VS Code
+
+### Variables
+@baseUrl = http://localhost:8080
+@token = 
+
+###############################################
+# AUTENTICACIÓN
+###############################################
+
+### Registro de Cliente
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "cliente1@test.com",
+  "password": "password123",
+  "nombreCompleto": "Pedro Sánchez",
+  "rut": "12345678-9",
+  "rol": "CLIENTE"
+}
+
+### Registro de Profesional (Gasfiter)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "gasfiter1@test.com",
+  "password": "password123",
+  "nombreCompleto": "Carlos Muñoz",
+  "rut": "98765432-1",
+  "rol": "PROFESIONAL",
+  "biografia": "Gasfiter con 10 años de experiencia en instalaciones residenciales y comerciales",
+  "telefono": "56912345678"
+}
+
+### Registro de Profesional (Electricista)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "electricista1@test.com",
+  "password": "password123",
+  "nombreCompleto": "María González",
+  "rut": "11223344-5",
+  "rol": "PROFESIONAL",
+  "biografia": "Electricista certificada SEC, especialista en instalaciones industriales",
+  "telefono": "56987654321"
+}
+
+### Registro de Administrador
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@chaskipro.cl",
+  "password": "admin123",
+  "nombreCompleto": "Administrador Sistema",
+  "rut": "99999999-9",
+  "rol": "ADMIN"
+}
+
+### Login Cliente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente1@test.com",
+  "password": "password123"
+}
+
+### Login Profesional
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "gasfiter1@test.com",
+  "password": "password123"
+}
+
+### Login Admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@chaskipro.cl",
+  "password": "admin123"
+}
+
+###############################################
+# EJEMPLOS DE ERRORES
+###############################################
+
+### Login con credenciales incorrectas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente1@test.com",
+  "password": "wrongpassword"
+}
+
+### Registro con email duplicado
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "cliente1@test.com",
+  "password": "password123",
+  "nombreCompleto": "Usuario Duplicado",
+  "rut": "11111111-1",
+  "rol": "CLIENTE"
+}
+
+### Registro con RUT inválido
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password123",
+  "nombreCompleto": "Test Usuario",
+  "rut": "12345678",
+  "rol": "CLIENTE"
+}
+
+### Registro con email inválido
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "email-invalido",
+  "password": "password123",
+  "nombreCompleto": "Test Usuario",
+  "rut": "12345678-9",
+  "rol": "CLIENTE"
+}
+
+### Registro con contraseña corta
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test2@test.com",
+  "password": "123",
+  "nombreCompleto": "Test Usuario",
+  "rut": "22222222-2",
+  "rol": "CLIENTE"
+}
+
+###############################################
+# COMUNAS (Público)
+###############################################
+
+### Obtener todas las comunas
+GET {{baseUrl}}/api/comunas
+
+### Obtener comunas por región
+GET {{baseUrl}}/api/comunas/region/Metropolitana
+
+### Obtener comuna por ID
+GET {{baseUrl}}/api/comunas/1
+
+### Crear comuna (Solo Admin - requiere token)
+POST {{baseUrl}}/api/comunas?nombre=Santiago&region=Metropolitana
+Authorization: Bearer {{token}}
+
+###############################################
+# PROFESIONALES
+###############################################
+
+### Buscar profesionales por comuna (Público)
+GET {{baseUrl}}/api/profesionales/comuna/1
+
+### Obtener perfil profesional por ID (Público)
+GET {{baseUrl}}/api/profesionales/perfil/1
+
+### Obtener perfil por ID de usuario (Público)
+GET {{baseUrl}}/api/profesionales/usuario/2
+
+### Crear perfil profesional (requiere token PROFESIONAL)
+POST {{baseUrl}}/api/profesionales/perfil/2
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "biografia": "Gasfiter con 10 años de experiencia en instalaciones residenciales y comerciales",
+  "telefono": "56912345678",
+  "comunaIds": [1, 2, 3]
+}
+
+### Actualizar perfil profesional (requiere token)
+PUT {{baseUrl}}/api/profesionales/perfil/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "biografia": "Gasfiter certificado con 15 años de experiencia",
+  "telefono": "56987654321",
+  "comunaIds": [1, 2, 3, 4]
+}
+
+### Obtener todos los profesionales (Solo Admin)
+GET {{baseUrl}}/api/profesionales
+Authorization: Bearer {{token}}
+
+### Obtener profesionales PENDIENTES (Solo Admin)
+GET {{baseUrl}}/api/profesionales/estado/PENDIENTE
+Authorization: Bearer {{token}}
+
+### Obtener profesionales APROBADOS (Solo Admin)
+GET {{baseUrl}}/api/profesionales/estado/APROBADO
+Authorization: Bearer {{token}}
+
+### Aprobar perfil profesional (Solo Admin)
+PATCH {{baseUrl}}/api/profesionales/perfil/1/aprobar
+Authorization: Bearer {{token}}
+
+### Rechazar perfil profesional (Solo Admin)
+PATCH {{baseUrl}}/api/profesionales/perfil/1/rechazar
+Authorization: Bearer {{token}}
+
+### Cambiar estado de validación (Solo Admin)
+PATCH {{baseUrl}}/api/profesionales/perfil/1/estado
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "estadoValidacion": "APROBADO"
+}
+
+###############################################
+# HEALTH CHECK
+###############################################
+
+### Verificar que la aplicación está corriendo
+GET {{baseUrl}}/actuator/health

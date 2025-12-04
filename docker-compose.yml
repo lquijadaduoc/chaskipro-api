@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: chaskipro_db_container
+    environment:
+      POSTGRES_DB: chaskipro_db
+      POSTGRES_USER: chaskipro
+      POSTGRES_PASSWORD: chaskipro123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chaskipro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chaskipro -d chaskipro_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chaskipro_api_container
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/chaskipro_db
+      SPRING_DATASOURCE_USERNAME: chaskipro
+      SPRING_DATASOURCE_PASSWORD: chaskipro123
+    ports:
+      - "8080:8080"
+    networks:
+      - chaskipro-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  chaskipro-network:
+    driver: bridge
