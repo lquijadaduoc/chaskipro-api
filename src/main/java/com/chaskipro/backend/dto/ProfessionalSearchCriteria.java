@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class ProfessionalSearchCriteria {
+    private String searchTerm; // Búsqueda por nombre, especialidad, descripción
     private Long communeId;
     private ProfessionCategory professionCategory;
     private BigDecimal minRating;

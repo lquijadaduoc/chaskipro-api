@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -41,6 +40,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Crear profesionales de ejemplo
             crearProfesionales(comunas);
+            crearProfesionalesMasivos(comunas);
             
             // Crear cliente de ejemplo
             crearCliente();

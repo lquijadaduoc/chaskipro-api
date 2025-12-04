@@ -37,8 +37,24 @@ public class ProfessionalSpecifications {
         return (root, query, cb) -> cb.equal(root.get("estadoValidacion"), EstadoValidacion.APROBADO);
     }
 
+    public static Specification<ProfessionalProfile> searchTerm(String searchTerm) {
+        return (root, query, cb) -> {
+            if (searchTerm == null || searchTerm.trim().isEmpty()) {
+                return null;
+            }
+            String searchPattern = "%" + searchTerm.toLowerCase() + "%";
+            return cb.or(
+                    cb.like(cb.lower(root.join("usuario").get("nombre")), searchPattern),
+                    cb.like(cb.lower(root.get("titulo")), searchPattern),
+                    cb.like(cb.lower(root.get("descripcion")), searchPattern),
+                    cb.like(cb.lower(root.get("categoria").as(String.class)), searchPattern)
+            );
+        };
+    }
+
     public static Specification<ProfessionalProfile> build(ProfessionalSearchCriteria c) {
         return Specification.where(approvedOnly())
+                .and(searchTerm(c.getSearchTerm()))
                 .and(communeId(c.getCommuneId()))
                 .and(category(c.getProfessionCategory()))
                 .and(minRating(c.getMinRating()));

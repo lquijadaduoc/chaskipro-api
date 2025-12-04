@@ -25,12 +25,14 @@ public class ProfessionalSearchController {
 
     @GetMapping("/search")
     public Page<ProfessionalSummaryDto> search(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) Long communeId,
             @RequestParam(required = false) ProfessionCategory professionCategory,
             @RequestParam(required = false) BigDecimal minRating,
             Pageable pageable) {
 
         ProfessionalSearchCriteria criteria = ProfessionalSearchCriteria.builder()
+                .searchTerm(search)
                 .communeId(communeId)
                 .professionCategory(professionCategory)
                 .minRating(minRating)
