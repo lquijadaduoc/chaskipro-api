@@ -5,6 +5,10 @@ import com.chaskipro.backend.dto.ProfessionalProfileResponse;
 import com.chaskipro.backend.dto.UpdateStatusRequest;
 import com.chaskipro.backend.entity.EstadoValidacion;
 import com.chaskipro.backend.service.ProfessionalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,16 +21,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/profesionales")
 @RequiredArgsConstructor
+@Tag(name = "Profesionales", description = "Gestión de perfiles profesionales y búsqueda")
 public class ProfessionalController {
 
     private final ProfessionalService professionalService;
 
-    /**
-     * Crear perfil profesional (Usuario profesional puede crear su propio perfil)
-     */
+    @Operation(summary = "Crear perfil profesional", 
+               description = "Crea un perfil profesional para un usuario. Requiere rol PROFESIONAL o ADMIN.",
+               security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/perfil/{userId}")
     @PreAuthorize("hasRole('PROFESIONAL') or hasRole('ADMIN')")
     public ResponseEntity<ProfessionalProfileResponse> crearPerfil(
+            @Parameter(description = "ID del usuario", example = "1") 
             @PathVariable Long userId,
             @Valid @RequestBody ProfessionalProfileRequest request) {
         try {
@@ -37,12 +43,13 @@ public class ProfessionalController {
         }
     }
 
-    /**
-     * Actualizar perfil profesional
-     */
+    @Operation(summary = "Actualizar perfil profesional", 
+               description = "Actualiza la información de un perfil profesional. Requiere rol PROFESIONAL o ADMIN.",
+               security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/perfil/{profileId}")
     @PreAuthorize("hasRole('PROFESIONAL') or hasRole('ADMIN')")
     public ResponseEntity<ProfessionalProfileResponse> actualizarPerfil(
+            @Parameter(description = "ID del perfil profesional", example = "1") 
             @PathVariable Long profileId,
             @Valid @RequestBody ProfessionalProfileRequest request) {
         try {
@@ -53,11 +60,12 @@ public class ProfessionalController {
         }
     }
 
-    /**
-     * Buscar profesionales por comuna (Público - solo aprobados)
-     */
+    @Operation(summary = "Buscar profesionales por comuna", 
+               description = "Obtiene el listado de profesionales aprobados que operan en una comuna específica. Endpoint público.")
     @GetMapping("/comuna/{comunaId}")
-    public ResponseEntity<List<ProfessionalProfileResponse>> buscarPorComuna(@PathVariable Long comunaId) {
+    public ResponseEntity<List<ProfessionalProfileResponse>> buscarPorComuna(
+            @Parameter(description = "ID de la comuna", example = "1") 
+            @PathVariable Long comunaId) {
         try {
             List<ProfessionalProfileResponse> professionals = professionalService.buscarProfesionalesPorComuna(comunaId);
             return ResponseEntity.ok(professionals);
@@ -66,9 +74,9 @@ public class ProfessionalController {
         }
     }
 
-    /**
-     * Obtener todos los profesionales (Solo Admin)
-     */
+    @Operation(summary = "Listar todos los profesionales", 
+               description = "Obtiene el listado completo de profesionales. Requiere rol ADMIN.",
+               security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProfessionalProfileResponse>> obtenerTodos() {
@@ -76,12 +84,13 @@ public class ProfessionalController {
         return ResponseEntity.ok(professionals);
     }
 
-    /**
-     * Obtener profesionales por estado de validación (Solo Admin)
-     */
+    @Operation(summary = "Buscar profesionales por estado", 
+               description = "Filtra profesionales según su estado de validación (PENDIENTE, APROBADO, RECHAZADO). Requiere rol ADMIN.",
+               security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/estado/{estado}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProfessionalProfileResponse>> obtenerPorEstado(
+            @Parameter(description = "Estado de validación", example = "PENDIENTE") 
             @PathVariable EstadoValidacion estado) {
         List<ProfessionalProfileResponse> professionals = professionalService.obtenerProfesionalesPorEstado(estado);
         return ResponseEntity.ok(professionals);
