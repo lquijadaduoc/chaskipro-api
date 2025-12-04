@@ -31,6 +31,12 @@ public class ProfessionalSearchController {
             @RequestParam(required = false) BigDecimal minRating,
             Pageable pageable) {
 
+        System.out.println("🔍 Búsqueda recibida:");
+        System.out.println("  - search: " + search);
+        System.out.println("  - communeId: " + communeId);
+        System.out.println("  - professionCategory: " + professionCategory);
+        System.out.println("  - minRating: " + minRating);
+
         ProfessionalSearchCriteria criteria = ProfessionalSearchCriteria.builder()
                 .searchTerm(search)
                 .communeId(communeId)
@@ -38,6 +44,9 @@ public class ProfessionalSearchController {
                 .minRating(minRating)
                 .build();
 
-        return professionalSearchService.buscar(criteria, pageable);
+        Page<ProfessionalSummaryDto> result = professionalSearchService.buscar(criteria, pageable);
+        System.out.println("📦 Resultados encontrados: " + result.getTotalElements());
+
+        return result;
     }
 }

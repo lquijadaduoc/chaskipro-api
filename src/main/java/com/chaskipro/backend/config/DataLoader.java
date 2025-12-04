@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -92,10 +93,18 @@ public class DataLoader implements CommandLineRunner {
             .promedioCalificacion(new BigDecimal("4.8"))
             .totalCalificaciones(127)
             .serviciosCompletados(145)
-            .coberturas(new HashSet<>(comunas.subList(0, 5)))
+            .coberturas(new HashSet<>())
             .build();
         
-        professionalProfileRepository.save(perfilElectricista);
+        perfilElectricista = professionalProfileRepository.save(perfilElectricista);
+        
+        // Agregar coberturas después de guardar el perfil
+        if (comunas.size() >= 5) {
+            for (int i = 0; i < 5; i++) {
+                perfilElectricista.getCoberturas().add(comunas.get(i));
+            }
+            professionalProfileRepository.save(perfilElectricista);
+        }
         log.info("✅ Creado profesional: {}", electricista.getNombreCompleto());
 
         // Profesional 2: Plomero
@@ -119,10 +128,17 @@ public class DataLoader implements CommandLineRunner {
             .promedioCalificacion(new BigDecimal("4.9"))
             .totalCalificaciones(203)
             .serviciosCompletados(218)
-            .coberturas(new HashSet<>(comunas.subList(1, 7)))
+            .coberturas(new HashSet<>())
             .build();
         
-        professionalProfileRepository.save(perfilPlomero);
+        perfilPlomero = professionalProfileRepository.save(perfilPlomero);
+        
+        if (comunas.size() >= 7) {
+            for (int i = 1; i < 7; i++) {
+                perfilPlomero.getCoberturas().add(comunas.get(i));
+            }
+            professionalProfileRepository.save(perfilPlomero);
+        }
         log.info("✅ Creado profesional: {}", plomero.getNombreCompleto());
 
         // Profesional 3: Pintor
@@ -146,10 +162,17 @@ public class DataLoader implements CommandLineRunner {
             .promedioCalificacion(new BigDecimal("4.7"))
             .totalCalificaciones(89)
             .serviciosCompletados(95)
-            .coberturas(new HashSet<>(comunas.subList(0, 4)))
+            .coberturas(new HashSet<>())
             .build();
         
-        professionalProfileRepository.save(perfilPintor);
+        perfilPintor = professionalProfileRepository.save(perfilPintor);
+        
+        if (comunas.size() >= 4) {
+            for (int i = 0; i < 4; i++) {
+                perfilPintor.getCoberturas().add(comunas.get(i));
+            }
+            professionalProfileRepository.save(perfilPintor);
+        }
         log.info("✅ Creado profesional: {}", pintor.getNombreCompleto());
 
         // Profesional 4: Cerrajero
@@ -173,10 +196,17 @@ public class DataLoader implements CommandLineRunner {
             .promedioCalificacion(new BigDecimal("4.6"))
             .totalCalificaciones(156)
             .serviciosCompletados(167)
-            .coberturas(new HashSet<>(comunas.subList(2, 8)))
+            .coberturas(new HashSet<>())
             .build();
         
-        professionalProfileRepository.save(perfilCerrajero);
+        perfilCerrajero = professionalProfileRepository.save(perfilCerrajero);
+        
+        if (comunas.size() >= 8) {
+            for (int i = 2; i < 8; i++) {
+                perfilCerrajero.getCoberturas().add(comunas.get(i));
+            }
+            professionalProfileRepository.save(perfilCerrajero);
+        }
         log.info("✅ Creado profesional: {}", cerrajero.getNombreCompleto());
 
         // Profesional 5: Técnico de Refrigeración
