@@ -3,14 +3,20 @@ package com.chaskipro.backend.service;
 import com.chaskipro.backend.dto.ProfessionalProfileRequest;
 import com.chaskipro.backend.dto.ProfessionalProfileResponse;
 import com.chaskipro.backend.dto.UpdateStatusRequest;
+import com.chaskipro.backend.dto.ProfessionalDashboardDto;
+import com.chaskipro.backend.dto.ProfessionalSummaryDto;
 import com.chaskipro.backend.entity.*;
 import com.chaskipro.backend.repository.ComunaRepository;
 import com.chaskipro.backend.repository.ProfessionalProfileRepository;
+import com.chaskipro.backend.repository.ServiceRequestRepository;
 import com.chaskipro.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +29,29 @@ public class ProfessionalService {
     private final ProfessionalProfileRepository professionalProfileRepository;
     private final UserRepository userRepository;
     private final ComunaRepository comunaRepository;
+    private final ServiceRequestRepository serviceRequestRepository;
+    private final ProfessionalMapper professionalMapper;
+
+    @Transactional(readOnly = true)
+    public Page<ProfessionalSummaryDto> listarPorEstado(EstadoValidacion estado, Pageable pageable) {
+        return professionalProfileRepository.findByEstadoValidacion(estado, pageable)
+                .map(professionalMapper::toSummary);
+    }
+
+    @Transactional
+    public void cambiarEstado(Long profileId, EstadoValidacion estado, String motivoRechazo) {
+        ProfessionalProfile profile = professionalProfileRepository.findById(profileId)
+                .orElseThrow(() -> new RuntimeException("Perfil profesional no encontrado"));
+
+        profile.setEstadoValidacion(estado);
+        if (estado == EstadoValidacion.RECHAZADO) {
+            profile.setMotivoRechazo(motivoRechazo);
+        } else {
+            profile.setMotivoRechazo(null);
+        }
+
+        professionalProfileRepository.save(profile);
+    }
 
     /**
      * Crear un perfil profesional para un usuario existente
@@ -57,6 +86,7 @@ public class ProfessionalService {
                 .biografia(request.getBiografia())
                 .telefono(request.getTelefono())
                 .estadoValidacion(EstadoValidacion.PENDIENTE)
+                .categoria(request.getCategoria() != null ? request.getCategoria() : ProfessionCategory.OTRO)
                 .coberturas(comunas)
                 .build();
 
@@ -79,6 +109,9 @@ public class ProfessionalService {
         }
         if (request.getTelefono() != null) {
             profile.setTelefono(request.getTelefono());
+        }
+        if (request.getCategoria() != null) {
+            profile.setCategoria(request.getCategoria());
         }
 
         // Actualizar coberturas si se proporcionan
@@ -170,6 +203,11 @@ public class ProfessionalService {
         }
 
         profile.setEstadoValidacion(request.getEstadoValidacion());
+        if (request.getEstadoValidacion() == EstadoValidacion.RECHAZADO) {
+            profile.setMotivoRechazo(request.getMotivoRechazo());
+        } else {
+            profile.setMotivoRechazo(null);
+        }
 
         profile = professionalProfileRepository.save(profile);
 
@@ -189,6 +227,7 @@ public class ProfessionalService {
         }
 
         profile.setEstadoValidacion(EstadoValidacion.APROBADO);
+        profile.setMotivoRechazo(null);
         profile = professionalProfileRepository.save(profile);
 
         return mapToResponse(profile);
@@ -203,9 +242,32 @@ public class ProfessionalService {
                 .orElseThrow(() -> new RuntimeException("Perfil profesional no encontrado"));
 
         profile.setEstadoValidacion(EstadoValidacion.RECHAZADO);
+        profile.setMotivoRechazo("Rechazado por administrador");
         profile = professionalProfileRepository.save(profile);
 
         return mapToResponse(profile);
+    }
+
+    @Transactional(readOnly = true)
+    public ProfessionalDashboardDto obtenerDashboard(String email) {
+        ProfessionalProfile profile = professionalProfileRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Perfil profesional no encontrado para el usuario"));
+
+        List<EstadoServicio> abiertos = List.of(EstadoServicio.SOLICITADO);
+        List<EstadoServicio> enCurso = Arrays.asList(EstadoServicio.ACEPTADO, EstadoServicio.EN_PROCESO);
+
+        long ticketsAbiertos = serviceRequestRepository.countByProfesionalIdAndEstadoIn(profile.getId(), abiertos);
+        long ticketsEnCurso = serviceRequestRepository.countByProfesionalIdAndEstadoIn(profile.getId(), enCurso);
+
+        return professionalMapper.toDashboard(profile, ticketsAbiertos, ticketsEnCurso);
+    }
+
+    @Transactional
+    public void actualizarDisponibilidad(String email, boolean disponible) {
+        ProfessionalProfile profile = professionalProfileRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Perfil profesional no encontrado para el usuario"));
+        profile.setDisponible(disponible);
+        professionalProfileRepository.save(profile);
     }
 
     /**
@@ -228,6 +290,9 @@ public class ProfessionalService {
                 .biografia(profile.getBiografia())
                 .telefono(profile.getTelefono())
                 .estadoValidacion(profile.getEstadoValidacion())
+                .categoria(profile.getCategoria())
+                .disponible(profile.getDisponible())
+                .motivoRechazo(profile.getMotivoRechazo())
                 .promedioCalificacion(profile.getPromedioCalificacion())
                 .totalCalificaciones(profile.getTotalCalificaciones())
                 .serviciosCompletados(profile.getServiciosCompletados())

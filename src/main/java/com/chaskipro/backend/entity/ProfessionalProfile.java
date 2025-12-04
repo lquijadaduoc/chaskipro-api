@@ -45,6 +45,17 @@ public class ProfessionalProfile {
     @Builder.Default
     private EstadoValidacion estadoValidacion = EstadoValidacion.PENDIENTE;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "categoria", length = 50)
+    private ProfessionCategory categoria;
+
+    @Column(name = "disponible")
+    @Builder.Default
+    private Boolean disponible = true;
+
+    @Column(name = "motivo_rechazo", length = 500)
+    private String motivoRechazo;
+
     @Column(name = "promedio_calificacion", precision = 3, scale = 2)
     @DecimalMin(value = "0.0", message = "Calificación no puede ser menor a 0")
     @DecimalMax(value = "5.0", message = "Calificación no puede ser mayor a 5")

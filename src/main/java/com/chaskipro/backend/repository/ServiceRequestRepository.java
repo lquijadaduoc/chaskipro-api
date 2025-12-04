@@ -5,6 +5,8 @@ import com.chaskipro.backend.entity.EstadoServicio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -19,4 +21,8 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
     List<ServiceRequest> findByClienteIdAndEstado(Long clienteId, EstadoServicio estado);
     
     List<ServiceRequest> findByProfesionalIdAndEstado(Long profesionalId, EstadoServicio estado);
+
+    long countByEstadoAndFechaActualizacionBetween(EstadoServicio estado, LocalDateTime desde, LocalDateTime hasta);
+
+    long countByProfesionalIdAndEstadoIn(Long profesionalId, Collection<EstadoServicio> estados);
 }

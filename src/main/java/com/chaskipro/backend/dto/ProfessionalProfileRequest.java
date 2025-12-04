@@ -1,5 +1,6 @@
 package com.chaskipro.backend.dto;
 
+import com.chaskipro.backend.entity.ProfessionCategory;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,8 @@ public class ProfessionalProfileRequest {
 
     @Pattern(regexp = "^\\+?56?[0-9]{9}$", message = "Teléfono debe ser válido para Chile")
     private String telefono;
+
+    private ProfessionCategory categoria;
 
     // IDs de las comunas donde el profesional ofrece servicios
     private Set<Long> comunaIds;

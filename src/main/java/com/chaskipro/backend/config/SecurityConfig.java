@@ -53,19 +53,20 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Endpoints públicos de comunas
                         .requestMatchers("/api/comunas/**").permitAll()
+                        // Búsqueda pública de profesionales
+                        .requestMatchers("/api/professionals/search").permitAll()
                         // Endpoints públicos de profesionales (búsqueda y visualización)
                         .requestMatchers("/api/profesionales/comuna/**").permitAll()
                         .requestMatchers("/api/profesionales/perfil/{id}").permitAll()
                         .requestMatchers("/api/profesionales/usuario/{id}").permitAll()
                         // Endpoints de administrador
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/profesionales/estado/**").hasRole("ADMIN")
-                        .requestMatchers("/api/profesionales/perfil/*/aprobar").hasRole("ADMIN")
-                        .requestMatchers("/api/profesionales/perfil/*/rechazar").hasRole("ADMIN")
-                        .requestMatchers("/api/profesionales/perfil/*/estado").hasRole("ADMIN")
                         // Endpoints de profesionales (requieren autenticación)
+                        .requestMatchers("/api/pro/**").hasAnyRole("PROFESIONAL", "ADMIN")
                         .requestMatchers("/api/profesional/**").hasAnyRole("PROFESIONAL", "ADMIN")
                         .requestMatchers("/api/profesionales/perfil/**").hasAnyRole("PROFESIONAL", "ADMIN")
+                        // Subida de archivos
+                        .requestMatchers("/api/uploads/**").authenticated()
                         // Endpoints de clientes
                         .requestMatchers("/api/cliente/**").hasAnyRole("CLIENTE", "ADMIN")
                         // Cualquier otro endpoint requiere autenticación

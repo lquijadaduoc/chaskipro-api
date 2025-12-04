@@ -1,6 +1,7 @@
 package com.chaskipro.backend.dto;
 
 import com.chaskipro.backend.entity.EstadoValidacion;
+import com.chaskipro.backend.entity.ProfessionCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,9 @@ public class ProfessionalProfileResponse {
     private String biografia;
     private String telefono;
     private EstadoValidacion estadoValidacion;
+    private ProfessionCategory categoria;
+    private Boolean disponible;
+    private String motivoRechazo;
     private BigDecimal promedioCalificacion;
     private Integer totalCalificaciones;
     private Integer serviciosCompletados;
